@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load cart %}
+{% load custom_filter %}
+{% include 'navbar.html' %}
+<div class="container">
+  <div id="carouselExampleFade" class="carousel slide carousel-fade" interval="100" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{% static 'images/cs3.png' %}" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'images/cs2.jpg' %}" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'images/cs1.jpg' %}" class="d-block w-100" alt="...">
+      </div>
+    </div>
+
+
+  </div>
+
+
+  <h4 class="my-4">Flash Sale</h4>
+  <div class="container bg-light  shadow py-3">
+    <div class="row">
+      {% comment %} filter {% endcomment %}
+
+
+      <div class="col-lg-3 mx-auto">
+        <div class="list-group">
+          <a href="/" class="list-group-item list-group-item-action ">All Products</a>
+
+          {% for category in categories %}
+          <a href="/?category={{category.id}}" class="list-group-item list-group-item-action ">{{category.name}}</a>
+          {% endfor %}
+
+
+        </div>
+      </div>
+
+
+
+       <!-- All Products -->
+      <div id='Products' class="container col-lg-9 mx-auto" >
+        <div class="row">
+          {% for prd in products %}
+          <div class="col-sm-3 m-auto p-0 shadow mt-2 px-1 pb-2 card-pr" id={{prd.id}}>
+            <img src="{{prd.image.url}}" height="250px" width="100%" alt="...">
+            <div class="px-2">
+              <h6 class="card-title">{{prd.title}}</h6>
+              <p class="card-text">{{prd.price|currency}}</p>
+
+              {% comment %} {{prd | is_in_cart:request.session.cart}} {% endcomment %}
+
+              <div class="card-footer p-0 row no-gutter">
+
+                {% if prd|is_in_cart:request.session.cart %}
+                <div class="row mx-auto">
+                  <form action="/#{{prd.id}}" method="post" class="col-3 ">
+                    {% csrf_token %}
+                    <input hidden type="text" name="product" value="{{prd.id}}">
+                    <input hidden type="text" name="minuscart" value="True">
+                    <input type="submit" value="-" class="btn btn-block btn-secondary" >
+                  </form>
+                  <p class="text-center col my-auto">{{prd|cart_quantity:request.session.cart}} in cart</p>
+                  <form action="/#{{prd.id}}" method="post" class="col-3 ">
+                    {% csrf_token %}
+                    <input hidden type="text" name="product" value="{{prd.id}}">
+                    <input type="submit" value="+" class="btn btn-block btn-secondary" >
+                  </form>
+                </div>
+
+                {% else %}
+                <form action="/#{{prd.id}}" method="POST" class="btn-block">
+                  {% csrf_token %}
+                  <input hidden type="text" name="product" value="{{prd.id}}">
+                  <input type="submit" class="w-100 btn btn-light btn-secondary" value="Add to cart">
+                </form>
+
+                {% endif %}
+
+              </div>
+            </div>
+          </div>
+
+
+          {% endfor %}
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
